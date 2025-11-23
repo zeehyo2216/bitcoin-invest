@@ -6,7 +6,7 @@ import numpy as np
 from ta.trend import MACD, EMAIndicator, SMAIndicator
 from ta.momentum import RSIIndicator, StochasticOscillator
 from ta.volatility import BollingerBands, AverageTrueRange
-from ta.volume import VolumeSMAIndicator
+# VolumeSMAIndicator는 ta 라이브러리에 없으므로 pandas로 직접 계산
 
 
 class TechnicalIndicators:
@@ -89,11 +89,7 @@ class TechnicalIndicators:
     
     def _calculate_volume_sma(self):
         """거래량 SMA 계산"""
-        self.df['volume_sma'] = VolumeSMAIndicator(
-            close=self.df['close'],
-            volume=self.df['volume'],
-            window=20
-        ).volume_sma()
+        self.df['volume_sma'] = self.df['volume'].rolling(window=20).mean()
     
     def get_latest_signals(self) -> dict:
         """최신 신호 반환"""

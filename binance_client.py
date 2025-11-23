@@ -7,6 +7,7 @@ from binance.exceptions import BinanceAPIException
 from dotenv import load_dotenv
 import pandas as pd
 from typing import Optional, Dict, List
+from logger import logger
 
 load_dotenv()
 
@@ -38,9 +39,9 @@ class BinanceFuturesClient:
                 symbol=self.symbol,
                 leverage=self.leverage
             )
-            print(f"✅ 레버리지 {self.leverage}x 설정 완료")
+            logger.info(f"✅ 레버리지 {self.leverage}x 설정 완료")
         except BinanceAPIException as e:
-            print(f"⚠️ 레버리지 설정 오류: {e}")
+            logger.warning(f"⚠️ 레버리지 설정 오류: {e}")
     
     def get_klines(self, interval: str = '5m', limit: int = 200) -> pd.DataFrame:
         """캔들스틱 데이터 가져오기"""
@@ -64,7 +65,7 @@ class BinanceFuturesClient:
             
             return df[['timestamp', 'open', 'high', 'low', 'close', 'volume']]
         except BinanceAPIException as e:
-            print(f"❌ 데이터 가져오기 오류: {e}")
+            logger.error(f"❌ 데이터 가져오기 오류: {e}")
             return pd.DataFrame()
     
     def get_current_price(self) -> float:
@@ -73,7 +74,7 @@ class BinanceFuturesClient:
             ticker = self.client.futures_symbol_ticker(symbol=self.symbol)
             return float(ticker['price'])
         except BinanceAPIException as e:
-            print(f"❌ 현재 가격 가져오기 오류: {e}")
+            logger.error(f"❌ 현재 가격 가져오기 오류: {e}")
             return 0.0
     
     def get_account_balance(self) -> Dict:
@@ -90,7 +91,7 @@ class BinanceFuturesClient:
                 'unrealized_pnl': unrealized_pnl
             }
         except BinanceAPIException as e:
-            print(f"❌ 계정 정보 가져오기 오류: {e}")
+            logger.error(f"❌ 계정 정보 가져오기 오류: {e}")
             return {'total_balance': 0, 'available_balance': 0, 'unrealized_pnl': 0}
     
     def get_open_positions(self) -> List[Dict]:
@@ -114,7 +115,7 @@ class BinanceFuturesClient:
             
             return open_positions
         except BinanceAPIException as e:
-            print(f"❌ 포지션 정보 가져오기 오류: {e}")
+            logger.error(f"❌ 포지션 정보 가져오기 오류: {e}")
             return []
     
     def place_order(self, side: str, quantity: float, price: Optional[float] = None,
@@ -143,7 +144,7 @@ class BinanceFuturesClient:
             else:
                 raise ValueError(f"지원하지 않는 주문 타입: {order_type}")
             
-            print(f"✅ 주문 성공: {side} {quantity} {self.symbol}")
+            logger.info(f"✅ 주문 성공: {side} {quantity} {self.symbol}")
             
             # TP/SL 주문 설정
             if take_profit:
@@ -154,7 +155,7 @@ class BinanceFuturesClient:
             
             return order
         except BinanceAPIException as e:
-            print(f"❌ 주문 실행 오류: {e}")
+            logger.error(f"❌ 주문 실행 오류: {e}")
             return None
     
     def _set_take_profit(self, side: str, quantity: float, price: float):
@@ -168,9 +169,9 @@ class BinanceFuturesClient:
                 stopPrice=price,
                 closePosition=True
             )
-            print(f"✅ Take Profit 설정: {price}")
+            logger.info(f"✅ Take Profit 설정: {price}")
         except BinanceAPIException as e:
-            print(f"⚠️ Take Profit 설정 오류: {e}")
+            logger.warning(f"⚠️ Take Profit 설정 오류: {e}")
     
     def _set_stop_loss(self, side: str, quantity: float, price: float):
         """Stop Loss 주문 설정"""
@@ -183,16 +184,16 @@ class BinanceFuturesClient:
                 stopPrice=price,
                 closePosition=True
             )
-            print(f"✅ Stop Loss 설정: {price}")
+            logger.info(f"✅ Stop Loss 설정: {price}")
         except BinanceAPIException as e:
-            print(f"⚠️ Stop Loss 설정 오류: {e}")
+            logger.warning(f"⚠️ Stop Loss 설정 오류: {e}")
     
     def close_position(self, side: str = None):
         """포지션 청산"""
         try:
             positions = self.get_open_positions()
             if not positions:
-                print("⚠️ 청산할 포지션이 없습니다.")
+                logger.warning("⚠️ 청산할 포지션이 없습니다.")
                 return
             
             for pos in positions:
@@ -208,7 +209,7 @@ class BinanceFuturesClient:
                     type='MARKET',
                     quantity=quantity
                 )
-                print(f"✅ 포지션 청산 완료: {pos['side']} {quantity}")
+                logger.info(f"✅ 포지션 청산 완료: {pos['side']} {quantity}")
         except BinanceAPIException as e:
-            print(f"❌ 포지션 청산 오류: {e}")
+            logger.error(f"❌ 포지션 청산 오류: {e}")
 

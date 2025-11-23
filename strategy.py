@@ -9,10 +9,10 @@ from indicators import TechnicalIndicators
 class TradingStrategy:
     """통합 투자 전략 클래스"""
     
-    def __init__(self, initial_balance: float = 600, leverage: int = 20, risk_per_trade: float = 0.02):
+    def __init__(self, initial_balance: float = 600, leverage: int = 20, risk_per_trade: float = 0.20):
         self.initial_balance = initial_balance
         self.leverage = leverage
-        self.risk_per_trade = risk_per_trade  # 거래당 리스크 (2%)
+        self.risk_per_trade = risk_per_trade  # 거래당 리스크 (20%)
         self.position_size_multiplier = 0.8  # 사용 가능한 자본의 80%만 사용
     
     def analyze(self, indicators: TechnicalIndicators) -> Dict:

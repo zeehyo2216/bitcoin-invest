@@ -12,4 +12,7 @@ build/
 .venv/
 venv/
 *.log
+logs/
+bot.pid
+*.pid
 

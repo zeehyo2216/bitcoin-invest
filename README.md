@@ -17,7 +17,7 @@
   - 여러 지표를 종합한 점수 기반 신호 생성
   - 레버리지 20x 지원
   - 자동 TP/SL 설정
-  - 리스크 관리 (거래당 2% 리스크)
+  - 리스크 관리 (거래당 20% 리스크)
 
 - ⏰ **실시간 모니터링**
   - 5분 간격 자동 분석
@@ -55,6 +55,10 @@ LEVERAGE=20
 INITIAL_BALANCE=600
 INTERVAL=5m
 TESTNET=False
+
+# Logging Configuration (선택사항)
+# LOG_DIR=/var/log/trading_bot  # 로그 디렉토리 (기본값: ./logs)
+# LOG_TO_CONSOLE=true           # 콘솔 출력 여부 (기본값: true)
 ```
 
 ### 3. 바이낸스 API 키 발급
@@ -105,13 +109,23 @@ python3 main.py
 - 사용 가능한 자본의 80% 사용
 - 레버리지 20x 적용
 - ATR 기반 리스크 관리
-- 거래당 최대 2% 리스크
+- 거래당 최대 20% 리스크
 
 ### TP/SL 설정
 
 - **Take Profit**: 진입가 ± 3 ATR
 - **Stop Loss**: 진입가 ± 2 ATR
 - 최소 1% 수익, 0.5% 손실 보장
+
+## 로그 파일
+
+봇은 모든 활동을 일별 로그 파일에 기록합니다.
+
+- **로그 디렉토리**: 기본값은 프로젝트 디렉토리 내 `logs/` 폴더
+- **로그 파일명**: `trading_bot_YYYY-MM-DD.log` 형식
+- **로그 설정**: `.env` 파일에서 `LOG_DIR` 환경변수로 변경 가능
+  - 예: `LOG_DIR=/var/log/trading_bot` (리눅스 서버 환경)
+- **콘솔 출력**: 기본적으로 콘솔에도 출력 (`.env`에서 `LOG_TO_CONSOLE=false`로 비활성화 가능)
 
 ## 파일 구조
 
@@ -122,10 +136,22 @@ bitcoin-invest/
 ├── indicators.py           # 기술적 지표 계산
 ├── strategy.py             # 투자 전략 로직
 ├── position_manager.py     # 포지션 관리
+├── logger.py               # 로깅 설정 모듈
 ├── requirements.txt        # 필요한 라이브러리
 ├── .env.example           # 환경 변수 예시
+├── deploy.sh               # 배포 스크립트
+├── trading-bot.service     # systemd 서비스 파일
+├── logs/                  # 로그 파일 저장 디렉토리
+├── Docs/                  # 문서 폴더
+│   ├── DEPLOYMENT.md      # 배포 가이드
+│   ├── CHECKLIST.md       # 배포 체크리스트
+│   └── STRATEGY_ANALYSIS.md # 전략 분석 문서
 └── README.md              # 이 파일
 ```
+
+## 서버 배포
+
+리눅스 서버에 배포하는 방법은 `Docs/DEPLOYMENT.md` 파일을 참고하세요.
 
 ## 주의사항
 

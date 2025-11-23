@@ -4,6 +4,7 @@
 from typing import Dict, Optional, List
 from binance_client import BinanceFuturesClient
 import time
+from logger import logger
 
 
 class PositionManager:
@@ -73,7 +74,7 @@ class PositionManager:
         
         # 포지션 청산 확인
         if self.should_close_position(analysis, current_position):
-            print("🔄 포지션 청산 신호 감지")
+            logger.info("🔄 포지션 청산 신호 감지")
             self.client.close_position()
             time.sleep(1)  # API 호출 간격
             current_position = None
@@ -93,10 +94,10 @@ class PositionManager:
             else:
                 return False
             
-            print(f"📈 포지션 오픈: {side} {position_size} {self.symbol}")
-            print(f"   진입가: ${entry_price:,.2f}")
-            print(f"   Take Profit: ${tp_price:,.2f}")
-            print(f"   Stop Loss: ${sl_price:,.2f}")
+            logger.info(f"📈 포지션 오픈: {side} {position_size} {self.symbol}")
+            logger.info(f"   진입가: ${entry_price:,.2f}")
+            logger.info(f"   Take Profit: ${tp_price:,.2f}")
+            logger.info(f"   Stop Loss: ${sl_price:,.2f}")
             
             # 주문 실행
             order = self.client.place_order(
